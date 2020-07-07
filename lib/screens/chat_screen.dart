@@ -20,17 +20,23 @@ class _ChatScreenState extends State<ChatScreen> {
     getCurrentUser();
   }
 
-  void getCurrentUser() async{
+  void getCurrentUser() async {
     try {
-      final FirebaseUser user = await  _auth.currentUser();
+      final FirebaseUser user = await _auth.currentUser();
       print(user.toString());
-      print("thsikjkjk");
       if (user != null) {
         loggedInUser = user;
-        print(loggedInUser.uid);
       }
     } catch (e) {
       print(e.toString());
+    }
+  }
+
+  void getMessages() async {
+    final messages = await _firestore.collection('messages').getDocuments();
+    print("hotkd");
+    for (var message in messages.documents) {
+      print(message.data);
     }
   }
 
@@ -42,10 +48,11 @@ class _ChatScreenState extends State<ChatScreen> {
         actions: <Widget>[
           IconButton(
               icon: Icon(Icons.close),
-              onPressed: () async {
+              onPressed: () {
+                getMessages();
                 //Implement logout functionality
-                await _auth.signOut();
-                Navigator.pop(context);
+                // await _auth.signOut();
+                // Navigator.pop(context);
               }),
         ],
         title: Text('Chat'),
@@ -75,8 +82,8 @@ class _ChatScreenState extends State<ChatScreen> {
                       print(messageText);
                       //Implement send functionality.
                       _firestore.collection('messages').add(
-                          {'text': messageText, 'sender':loggedInUser.email});
-                          // {'text': messageText, 'sender':"mustapha.ddare@gmail.com"});
+                          {'text': messageText, 'sender': loggedInUser.email});
+                      // {'text': messageText, 'sender':"mustapha.ddare@gmail.com"});
                     },
                     child: Text(
                       'Send',
